@@ -11,41 +11,31 @@
 <body>
 
     <div class="top-toolbar">
-    <!-- <div class="auth-section">
-        <button id="login-btn" class="btn-login">
-            <i class="fa-brands fa-google"></i> <span class="btn-text">Đăng nhập</span>
-        </button>
-        <div id="user-info" class="user-info" style="display: none;"></div>
-    </div> -->
-
-    <div class="dict-wrapper">
-        <div class="search-box">
-            <input type="text" id="dict-input" placeholder="Tra từ điển (Anh-Việt)..." onkeyup="searchDictionary()">
-            <button><i class="fa-solid fa-magnifying-glass"></i></button>
+        <div class="dict-wrapper">
+            <div class="search-box">
+                <input type="text" id="dict-input" placeholder="Tra từ điển (Anh-Việt)..." onkeyup="searchDictionary()">
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <div id="dict-results" class="dict-results"></div>
         </div>
-        <div id="dict-results" class="dict-results"></div>
     </div>
 
-    <button id="menu-toggle-btn" onclick="toggleSidebar()">
+    <button id="mobile-menu-btn" onclick="openMobileMenu()">
         <i class="fa-solid fa-bars"></i>
     </button>
 
     <div class="app-container">
-        <button id="mobile-menu-btn" onclick="toggleMobileMenu()">
-            <i class="fa-solid fa-bars"></i>
-        </button>
+        
+        <div id="mobile-overlay" onclick="closeAnyMenu()"></div>
 
-        <div class="container">
-            </div>
-
-        <div id="mobile-overlay" onclick="toggleMobileMenu()"></div>
-        <div class="sidebar" id="sidebar">
+        <div class="sidebar" id="my-sidebar">
             <div class="sidebar-header">
                 <h2><i class="fa-solid fa-graduation-cap"></i> Lộ Trình</h2>
-                <button class="close-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-times"></i></button>
+                <button class="close-sidebar" onclick="closeAnyMenu()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
             </div>
-            <ul id="lesson-list">
-                </ul>
+            <ul id="lesson-list"></ul>
         </div>
 
         <div class="main-content" id="main-content">
@@ -68,9 +58,6 @@
                     <button class="tab-btn" onclick="openTab('practice')">
                         <i class="fa-solid fa-dumbbell"></i> Luyện Tập 
                     </button>
-                    <!-- <button class="tab-btn" onclick="openTab('ai-chat')">
-                        <i class="fa-solid fa-robot"></i> Trợ lý AI
-                    </button> -->
                 </div>
             </div>
 
@@ -78,10 +65,8 @@
         </div>
     </div>
     
-    <!-- <script type="module" src="firebase-config.js"></script> -->
     <script src="dictionary.js"></script>
     <script src="data.js"></script>
-    <!-- <script src="env.js"></script> -->
     <script src="script.js"></script>
 </body>
 </html>

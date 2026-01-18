@@ -432,16 +432,64 @@ function checkInputAnswer(idx, correctAnswer) {
 }
 
 // Hàm Bật/Tắt Sidebar
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const menuBtn = document.getElementById('menu-toggle-btn');
-    if (sidebar) sidebar.classList.toggle('hidden');
+// 1. Hàm MỞ Menu trên Mobile (Chỉ dành cho điện thoại)
+function openMobileMenu() {
+    const sidebar = document.getElementById('my-sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+
+    if (sidebar && overlay) {
+        sidebar.classList.add('open'); // Trượt ra
+        overlay.style.display = 'block'; // Hiện màn đen
+        if (mobileBtn) mobileBtn.style.display = 'none'; // Ẩn nút 3 gạch
+    }
+}
+
+// 2. Hàm ĐÓNG Menu (Dùng chung cho cả nút X và bấm ra ngoài)
+function closeAnyMenu() {
+    const sidebar = document.getElementById('my-sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    const mobileBtn = document.getElementById('mobile-menu-btn');
     
-    // Hiện nút menu nếu sidebar ẩn
-    if (sidebar && sidebar.classList.contains('hidden')) {
-        if(menuBtn) menuBtn.style.display = 'block';
+    // Kiểm tra kích thước màn hình
+    if (window.innerWidth <= 768) {
+        // --- LOGIC MOBILE ---
+        if (sidebar) sidebar.classList.remove('open');
+        if (overlay) overlay.style.display = 'none';
+        if (mobileBtn) mobileBtn.style.display = 'block';
     } else {
-        if(menuBtn) menuBtn.style.display = 'none';
+        // --- LOGIC DESKTOP ---
+        // Khi bấm X trên máy tính -> Ẩn Sidebar đi
+        if (sidebar) {
+            sidebar.classList.add('hidden');
+            updateDesktopUI(); // Cập nhật lại nút bấm
+        }
+    }
+}
+
+// 3. Hàm Bật/Tắt Menu trên Desktop (Nút 3 gạch máy tính)
+function toggleDesktopSidebar() {
+    const sidebar = document.getElementById('my-sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('hidden');
+        updateDesktopUI();
+    }
+}
+
+// 4. Hàm phụ trợ: Cập nhật giao diện Desktop (Ẩn/Hiện nút bấm)
+function updateDesktopUI() {
+    const sidebar = document.getElementById('my-sidebar');
+    const desktopBtn = document.getElementById('menu-toggle-btn');
+    const mainContent = document.getElementById('main-content');
+
+    if (sidebar && sidebar.classList.contains('hidden')) {
+        // Đang ẩn -> Hiện nút menu nổi, giãn nội dung ra
+        if (desktopBtn) desktopBtn.style.display = 'block';
+        if (mainContent) mainContent.style.marginLeft = '0';
+    } else {
+        // Đang hiện -> Ẩn nút menu nổi
+        if (desktopBtn) desktopBtn.style.display = 'none';
+        if (mainContent) mainContent.style.marginLeft = '0';
     }
 }
 
@@ -1076,22 +1124,6 @@ window.onload = function() {
         }
     });
 };
-
-// --- FILE: script.js (Thêm vào cuối) ---
-
-// Hàm bật/tắt menu trên điện thoại
-function toggleMobileMenu() {
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.getElementById('mobile-overlay');
-    
-    sidebar.classList.toggle('open');
-    
-    if (sidebar.classList.contains('open')) {
-        overlay.style.display = 'block';
-    } else {
-        overlay.style.display = 'none';
-    }
-}
 
 // Tự động đóng menu khi bấm vào một bài học (để người dùng xem nội dung)
 // Tìm hàm loadLesson cũ và thêm dòng này vào đầu hàm
