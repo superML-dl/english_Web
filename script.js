@@ -16,7 +16,8 @@ function init() {
     courseData.forEach((lesson, index) => {
         const li = document.createElement('li');
         // LOGIC KHÓA: Nếu chưa đăng nhập VÀ bài học thứ 3 trở đi (index > 1)
-        const isLocked = !window.currentUser && index > 1;
+        // const isLocked = !window.currentUser && index > 1;
+        const isLocked = false;
         if (isLocked) {
             li.className = 'locked-lesson';
             li.style.opacity = '0.6';
@@ -140,10 +141,10 @@ function renderVocab() {
 
 // 5. Render Ngữ pháp
 function renderGrammar() {
-    if (!window.currentUser) {
-        renderLockedContent('content-area', 'Ngữ Pháp & Cấu Trúc');
-        return; // Dừng lại
-    }
+    // if (!window.currentUser) {
+    //     renderLockedContent('content-area', 'Ngữ Pháp & Cấu Trúc');
+    //     return; // Dừng lại
+    // }
     if (!currentLesson.grammar) return;
     const div = document.createElement('div');
     div.className = 'grammar-section';
@@ -175,22 +176,22 @@ function normalizeText(text) {
 
 // 1. Render Giao diện Luyện tập (Quiz)
 function renderPractice() {
-    if (!window.currentUser) {
-        contentArea.innerHTML = `
-            <div style="text-align: center; padding: 50px 20px; background: white; border-radius: 15px; border: 2px dashed #ccc;">
-                <i class="fa-solid fa-lock" style="font-size: 50px; color: #999; margin-bottom: 20px;"></i>
-                <h2 style="color: #555; margin-bottom: 10px;">Nội dung bị khóa</h2>
-                <p style="font-size: 16px; color: #666; margin-bottom: 25px;">
-                    Bạn cần đăng nhập để làm bài tập và lưu kết quả học tập.
-                </p>
+    // if (!window.currentUser) {
+    //     contentArea.innerHTML = `
+    //         <div style="text-align: center; padding: 50px 20px; background: white; border-radius: 15px; border: 2px dashed #ccc;">
+    //             <i class="fa-solid fa-lock" style="font-size: 50px; color: #999; margin-bottom: 20px;"></i>
+    //             <h2 style="color: #555; margin-bottom: 10px;">Nội dung bị khóa</h2>
+    //             <p style="font-size: 16px; color: #666; margin-bottom: 25px;">
+    //                 Bạn cần đăng nhập để làm bài tập và lưu kết quả học tập.
+    //             </p>
                 
-                <button onclick="window.loginWithGoogle()" class="chat-btn" style="padding: 12px 30px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    <i class="fa-brands fa-google"></i> Đăng nhập bằng Google
-                </button>
-            </div>
-        `;
-        return; // 🛑 DỪNG LẠI NGAY, KHÔNG CHẠY CODE BÊN DƯỚI
-    }
+    //             <button onclick="window.loginWithGoogle()" class="chat-btn" style="padding: 12px 30px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+    //                 <i class="fa-brands fa-google"></i> Đăng nhập bằng Google
+    //             </button>
+    //         </div>
+    //     `;
+    //     return; // 🛑 DỪNG LẠI NGAY, KHÔNG CHẠY CODE BÊN DƯỚI
+    // }
 
     // Reset lại đáp án mỗi khi mở lại tab
     userAnswers = {};
@@ -529,10 +530,10 @@ openTab = function(tabName) {
 
 // 2. Hàm Khởi tạo Flashcard
 function initFlashcard() {
-    if (!window.currentUser) {
-        renderLockedContent('content-area', 'Flashcard Ghi Nhớ');
-        return;
-    }
+    // if (!window.currentUser) {
+    //     renderLockedContent('content-area', 'Flashcard Ghi Nhớ');
+    //     return;
+    // }
     if (!currentLesson.vocab || currentLesson.vocab.length === 0) {
         contentArea.innerHTML = "<p>Bài này chưa có từ vựng để học Flashcard.</p>";
         return;
