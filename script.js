@@ -2,7 +2,7 @@
    PHẦN 2: LOGIC XỬ LÝ 
    ============================================================ */
 
-const API_KEY = CONFIG.API_KEY; 
+// const API_KEY = CONFIG.API_KEY; 
 
 let currentLesson = null;
 const contentArea = document.getElementById('content-area');
