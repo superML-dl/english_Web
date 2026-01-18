@@ -750,41 +750,41 @@ function comparePronunciation(target, input) {
 let cachedModel = null; // Biến lưu model đã tìm thấy
 
 // 1. Render Giao diện Chat
-function renderAIChat() {
-    if (!window.currentUser) {
-        renderLockedContent('content-area', 'Trợ Lý AI & Luyện Nói');
-        return;
-    }
-    contentArea.innerHTML = `
-        <div class="chat-container">
-            <div class="chat-box" id="chat-box">
-                <div class="chat-message ai">
-                    Hello! I am your AI English Tutor. <br>
-                    (Tôi đang kết nối với Google để tìm model phù hợp nhất cho bạn...)
-                </div>
-            </div>
-            <div class="chat-input-area">
-                <button class="chat-mic-btn" id="chat-mic" onclick="toggleVoiceChat()">
-                    <i class="fa-solid fa-microphone"></i>
-                </button>
-                <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." onkeypress="handleEnter(event)">
-                <button class="chat-btn" onclick="sendMessage()">Gửi</button>
-            </div>
-        </div>
-        <div style="text-align:center; margin-top:10px;">
-            <label style="font-size:14px; color:#555; cursor:pointer; user-select:none;">
-                <input type="checkbox" id="auto-speak-toggle" > 🔊 Tự động đọc câu trả lời
-            </label>
-        </div>
-    `;
+// function renderAIChat() {
+//     if (!window.currentUser) {
+//         renderLockedContent('content-area', 'Trợ Lý AI & Luyện Nói');
+//         return;
+//     }
+//     contentArea.innerHTML = `
+//         <div class="chat-container">
+//             <div class="chat-box" id="chat-box">
+//                 <div class="chat-message ai">
+//                     Hello! I am your AI English Tutor. <br>
+//                     (Tôi đang kết nối với Google để tìm model phù hợp nhất cho bạn...)
+//                 </div>
+//             </div>
+//             <div class="chat-input-area">
+//                 <button class="chat-mic-btn" id="chat-mic" onclick="toggleVoiceChat()">
+//                     <i class="fa-solid fa-microphone"></i>
+//                 </button>
+//                 <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." onkeypress="handleEnter(event)">
+//                 <button class="chat-btn" onclick="sendMessage()">Gửi</button>
+//             </div>
+//         </div>
+//         <div style="text-align:center; margin-top:10px;">
+//             <label style="font-size:14px; color:#555; cursor:pointer; user-select:none;">
+//                 <input type="checkbox" id="auto-speak-toggle" > 🔊 Tự động đọc câu trả lời
+//             </label>
+//         </div>
+//     `;
     
-    // Tự động kiểm tra model ngay khi mở tab
-    detectBestModel(); 
-}
+//     // Tự động kiểm tra model ngay khi mở tab
+//     detectBestModel(); 
+// }
 
-function handleEnter(e) {
-    if (e.key === 'Enter') sendMessage();
-}
+// function handleEnter(e) {
+//     if (e.key === 'Enter') sendMessage();
+// }
 
 // 2. Hàm Tự động dò tìm Model khả dụng (QUAN TRỌNG NHẤT)
 async function detectBestModel() {
