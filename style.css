@@ -650,3 +650,100 @@ body {
     margin-top: 10px;
     font-size: 14px;
 }
+
+/* --- FILE: style.css (Dán vào cuối file) --- */
+
+/* 1. Nút Menu Mobile (Mặc định ẩn trên máy tính) */
+#mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 2000;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* 2. Lớp phủ mờ khi mở menu */
+#mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1090;
+}
+
+/* 3. CẤU HÌNH CHO ĐIỆN THOẠI (Màn hình < 768px) */
+@media (max-width: 768px) {
+    /* Hiện nút menu */
+    #mobile-menu-btn { display: block; }
+
+    /* Ẩn Sidebar sang bên trái */
+    .sidebar {
+        position: fixed;
+        left: -280px; /* Giấu đi */
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        z-index: 1100;
+        transition: 0.3s;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* Class này sẽ được JS thêm vào để hiện menu ra */
+    .sidebar.open {
+        left: 0;
+    }
+
+    /* Nội dung chính tràn màn hình (Không còn margin trái) */
+    .main-content {
+        margin-left: 0;
+        padding: 60px 15px 20px 15px; /* Tăng padding top để tránh nút menu */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Sửa lỗi Thanh công cụ (Search & Login) bị đè */
+    .top-toolbar {
+        position: absolute; /* Không fixed nữa để đỡ che nội dung */
+        top: 15px;
+        right: 15px;
+        left: 70px; /* Chừa chỗ cho nút menu */
+        justify-content: flex-end;
+    }
+
+    /* Thanh tìm kiếm nhỏ lại */
+    .search-box {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .search-box input {
+        width: 100%;
+    }
+
+    /* Ẩn bớt các nút Login to đùng, chỉ hiện icon nếu cần */
+    .btn-text { display: none; }
+    
+    /* Chỉnh chữ tiêu đề nhỏ lại */
+    h1 { font-size: 20px; }
+    
+    /* Chỉnh các nút tab (Từ vựng, Ngữ pháp...) cuộn ngang */
+    .tabs-wrapper {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        justify-content: flex-start;
+    }
+    
+    .tab-btn {
+        flex: 0 0 auto; /* Không co giãn */
+        white-space: nowrap;
+    }
+}

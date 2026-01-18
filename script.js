@@ -1077,3 +1077,34 @@ window.onload = function() {
     });
 };
 
+// --- FILE: script.js (Thêm vào cuối) ---
+
+// Hàm bật/tắt menu trên điện thoại
+function toggleMobileMenu() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    sidebar.classList.toggle('open');
+    
+    if (sidebar.classList.contains('open')) {
+        overlay.style.display = 'block';
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+// Tự động đóng menu khi bấm vào một bài học (để người dùng xem nội dung)
+// Tìm hàm loadLesson cũ và thêm dòng này vào đầu hàm
+const originalLoadLesson = window.loadLesson; // Lưu hàm cũ
+window.loadLesson = function(index) {
+    // 1. Đóng menu (nếu đang mở)
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('mobile-overlay');
+    if (sidebar && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.style.display = 'none';
+    }
+
+    // 2. Chạy logic cũ
+    if (originalLoadLesson) originalLoadLesson(index);
+};

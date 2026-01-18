@@ -3,7 +3,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signO
 import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 // --- CẤU HÌNH ---
-const firebaseConfig = CONFIG.FIREBASE_CONFIG
+// const firebaseConfig = CONFIG.FIREBASE_CONFIG
 
 // Khởi tạo
 const app = initializeApp(firebaseConfig);
