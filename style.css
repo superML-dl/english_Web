@@ -1,425 +1,140 @@
-/* ============================================================
-   1. CẤU HÌNH CƠ BẢN & MÀU SẮC
-   ============================================================ */
+/* ==================== CẤU HÌNH CƠ BẢN ==================== */
 :root {
-    --primary-color: #58cc02;  /* Xanh lá Duolingo */
-    --primary-hover: #46a302;
-    --secondary-color: #2b70c9; /* Xanh dương */
-    --bg-color: #f7f7f7;        /* Màu nền xám nhạt */
-    --sidebar-bg: #ffffff;
-    --text-dark: #3c3c3c;
-    --text-light: #777;
-    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --primary-color: #58cc02; --primary-hover: #46a302;
+    --secondary-color: #2b70c9; --bg-color: #f7f7f7;
+    --sidebar-bg: #ffffff; --text-dark: #3c3c3c;
 }
-
 body {
-    font-family: 'Nunito', sans-serif;
-    margin: 0;
-    background-color: var(--bg-color);
-    color: var(--text-dark);
-    height: 100vh;
-    overflow: hidden; /* Chỉ cuộn phần nội dung chính */
+    font-family: 'Nunito', sans-serif; margin: 0;
+    background-color: var(--bg-color); color: var(--text-dark);
+    height: 100vh; overflow: hidden;
 }
 
-/* ============================================================
-   2. LAYOUT CHÍNH (SIDEBAR + MAIN)
-   ============================================================ */
-.app-container {
-    display: flex;
-    height: 100vh;
-    width: 100%;
-    position: relative;
-}
+/* ==================== LAYOUT CHÍNH (DESKTOP DEFAULT) ==================== */
+.app-container { display: flex; height: 100vh; width: 100%; position: relative; }
 
-/* --- SIDEBAR TRÁI --- */
+/* SIDEBAR MẶC ĐỊNH (DESKTOP) */
 .sidebar {
-    width: 280px;
-    background: var(--sidebar-bg);
+    width: 280px; background: var(--sidebar-bg);
     border-right: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    flex-shrink: 0;
-
-    position: relative;
-
-    /* Hiệu ứng trượt cho cả Desktop (margin-left) và Mobile (left) */
-    transition: margin-left 0.3s ease, left 0.3s ease;
+    display: flex; flex-direction: column; height: 100%; flex-shrink: 0;
     z-index: 500;
+    /* QUAN TRỌNG: Desktop đứng yên, không trượt */
+    position: relative; 
+    left: 0 !important; /* Luôn hiện */
 }
 
-/* Class ẩn sidebar trên Desktop */
-.sidebar.hidden {
-    margin-left: -280px;
-}
+.sidebar-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.sidebar-header h2 { margin: 0; color: var(--primary-color); font-size: 22px; font-weight: 800; }
 
-.sidebar-header {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+/* Nút Đóng Sidebar (Mặc định ẩn trên Desktop) */
+.close-sidebar { display: none; background: none; border: none; font-size: 18px; cursor: pointer; color: #888; }
 
-.sidebar-header h2 {
-    margin: 0;
-    color: var(--primary-color);
-    font-size: 22px;
-    font-weight: 800;
-}
+#lesson-list { list-style: none; padding: 10px; overflow-y: auto; flex: 1; margin: 0; }
+#lesson-list li { padding: 12px 15px; margin-bottom: 5px; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 700; color: #555; transition: 0.2s; }
+#lesson-list li:hover { background-color: #f0f0f0; }
+#lesson-list li.active-lesson { background-color: #ddf4ff; color: #0088cc; border-left: 4px solid #0088cc; }
 
-.close-sidebar {
-    display: none; /* Mặc định ẩn, chỉ hiện trên mobile */
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: #888;
-}
+/* MAIN CONTENT */
+.main-content { flex: 1; overflow-y: auto; padding: 0; position: relative; }
+.header-section { padding: 30px 40px 10px 40px; }
+#lesson-title { font-size: 28px; font-weight: 800; color: #333; margin: 0; }
+.subtitle { color: #666; font-size: 16px; margin-top: 5px; }
 
-#lesson-list {
-    list-style: none;
-    padding: 10px;
-    overflow-y: auto;
-    flex: 1;
-    margin: 0;
-}
-
-#lesson-list li {
-    padding: 12px 15px;
-    margin-bottom: 5px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 700;
-    color: #555;
-    transition: 0.2s;
-}
-
-#lesson-list li:hover {
-    background-color: #f0f0f0;
-}
-
-#lesson-list li.active-lesson {
-    background-color: #ddf4ff;
-    color: #0088cc;
-    border-left: 4px solid #0088cc;
-}
-
-/* NÚT MENU NỔI CHO DESKTOP (Hiện khi ẩn sidebar) */
-#menu-toggle-btn {
-    position: fixed;
-    top: 15px;
-    left: 20px;
-    z-index: 900;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: none; /* Mặc định ẩn, JS sẽ bật lên khi cần */
-}
-
-/* NÚT MENU CHO MOBILE (Mặc định ẩn trên Desktop) */
-#mobile-menu-btn {
-    display: none; 
-    position: fixed;
-    top: 35px;
-    left: 20px;
-    z-index: 2000;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* --- MAIN CONTENT (PHẢI) --- */
-.main-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0;
-    position: relative;
-    transition: margin-left 0.3s;
-}
-
-.header-section {
-    padding: 30px 40px 10px 40px;
-}
-
-#lesson-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #333;
-    margin: 0;
-}
-
-.subtitle {
-    color: #666;
-    font-size: 16px;
-    margin-top: 5px;
-}
-
-/* ============================================================
-   3. CÁC THÀNH PHẦN KHÁC (Search, Tabs, Content...)
-   ============================================================ */
-/* THANH TÌM KIẾM */
-.dict-wrapper {
-    position: fixed;
-    top: 20px;
-    right: 40px;
-    z-index: 1000;
-    width: 280px;
-}
-
-.search-box {
-    display: flex;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    padding: 5px 15px;
-    border: 1px solid #ddd;
-}
-
-.search-box input {
-    border: none;
-    outline: none;
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    font-family: 'Nunito', sans-serif;
-}
-
-.search-box button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    color: var(--secondary-color);
-    cursor: pointer;
-}
-
-.dict-results {
-    background: white;
-    margin-top: 8px;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-    max-height: 400px;
-    overflow-y: auto;
-    display: none;
-    border: 1px solid #eee;
-}
-
+/* SEARCH BOX */
+.dict-wrapper { position: fixed; top: 20px; right: 40px; z-index: 1000; width: 280px; }
+.search-box { display: flex; background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 5px 15px; border: 1px solid #ddd; }
+.search-box input { border: none; outline: none; width: 100%; padding: 8px; font-size: 14px; font-family: 'Nunito', sans-serif; }
+.search-box button { background: none; border: none; font-size: 16px; color: var(--secondary-color); cursor: pointer; }
+.dict-results { background: white; margin-top: 8px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); max-height: 400px; overflow-y: auto; display: none; border: 1px solid #eee; }
 .dict-item { padding: 15px; border-bottom: 1px solid #f0f0f0; }
 .dict-word { font-size: 16px; font-weight: 800; color: var(--secondary-color); }
 
-/* TABS CHUYỂN ĐỔI (STICKY) */
-.tabs-container {
-    position: sticky;
-    top: 0;
-    background-color: var(--bg-color); /* Trùng màu nền để che nội dung trôi qua */
-    z-index: 400;
-    padding: 10px 40px;
-    border-bottom: 1px solid #e0e0e0;
-    margin-bottom: 20px;
-}
-
-.tabs-wrapper {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto; /* Cho phép cuộn ngang nếu màn hình nhỏ */
-    padding-bottom: 5px;
-}
-
-.tab-btn {
-    background: white;
-    border: 1px solid #ddd;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #666;
-    cursor: pointer;
-    transition: 0.2s;
-    white-space: nowrap;
-    font-family: 'Nunito', sans-serif;
-}
-
+/* TABS */
+.tabs-container { position: sticky; top: 0; background-color: var(--bg-color); z-index: 400; padding: 10px 40px; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px; }
+.tabs-wrapper { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+.tab-btn { background: white; border: 1px solid #ddd; padding: 8px 16px; border-radius: 20px; font-size: 15px; font-weight: 700; color: #666; cursor: pointer; transition: 0.2s; white-space: nowrap; font-family: 'Nunito', sans-serif; }
 .tab-btn:hover { background: #eee; }
-.tab-btn.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-    box-shadow: 0 3px 8px rgba(88, 204, 2, 0.3);
-}
+.tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 3px 8px rgba(88, 204, 2, 0.3); }
 
-/* NỘI DUNG BÀI HỌC */
+/* CONTENT STYLES */
 .content-area { padding: 0 40px 60px 40px; }
-
-/* TỪ VỰNG DẠNG LƯỚI */
-.vocab-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-}
-.vocab-item {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    border: 2px solid #e5e5e5;
-    box-shadow: 0 4px 0 #e5e5e5;
-    transition: transform 0.2s;
-}
+.vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.vocab-item { background: white; padding: 20px; border-radius: 15px; border: 2px solid #e5e5e5; box-shadow: 0 4px 0 #e5e5e5; transition: transform 0.2s; }
 .vocab-item:hover { transform: translateY(-5px); border-color: var(--primary-color); }
 .vocab-word { font-size: 22px; font-weight: 800; color: var(--secondary-color); }
-
-.btn-speak {
-    background: #ffc800;
-    color: #5a3a00;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 3px 0 #eeba00;
-}
+.btn-speak { background: #ffc800; color: #5a3a00; border: none; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 3px 0 #eeba00; }
 .btn-speak:active { transform: translateY(3px); box-shadow: none; }
-
-/* NGỮ PHÁP & BÀI TẬP */
-.grammar-section, .quiz-item {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    border: 2px solid #e5e5e5;
-    margin-bottom: 25px;
-    line-height: 1.6;
-}
-
-.quiz-options button {
-    display: block; width: 100%; margin: 8px 0; padding: 12px 15px;
-    text-align: left; background: white; border: 2px solid #e5e5e5;
-    border-radius: 10px; font-weight: 600; cursor: pointer;
-    font-family: 'Nunito', sans-serif; color: #555;
-}
+.grammar-section, .quiz-item { background: white; padding: 30px; border-radius: 16px; border: 2px solid #e5e5e5; margin-bottom: 25px; line-height: 1.6; }
+.quiz-options button { display: block; width: 100%; margin: 8px 0; padding: 12px 15px; text-align: left; background: white; border: 2px solid #e5e5e5; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: 'Nunito', sans-serif; color: #555; }
 .quiz-options button:hover { background: #f9f9f9; border-color: #ccc; }
-.quiz-options button.selected {
-    border-color: var(--secondary-color);
-    background-color: #eef7ff;
-    color: var(--secondary-color);
-    box-shadow: 0 0 0 1px var(--secondary-color);
-}
-.quiz-input {
-    width: 100%; padding: 12px; border: 2px solid #e5e5e5;
-    border-radius: 10px; font-size: 16px; margin: 10px 0;
-    font-family: 'Nunito', sans-serif; box-sizing: border-box;
-}
+.quiz-options button.selected { border-color: var(--secondary-color); background-color: #eef7ff; color: var(--secondary-color); box-shadow: 0 0 0 1px var(--secondary-color); }
+.quiz-input { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 10px; font-size: 16px; margin: 10px 0; font-family: 'Nunito', sans-serif; box-sizing: border-box; }
 .quiz-input:focus { border-color: var(--secondary-color); outline: none; }
 .correct-bg { border-color: var(--primary-color) !important; background-color: #f0fff4 !important; }
 .wrong-bg { border-color: #ff4b4b !important; background-color: #fff5f5 !important; }
 .feedback-msg { margin-top: 10px; font-size: 14px; }
-
-/* FLASHCARD */
 .flashcard-container { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
 .flashcard-scene { width: 100%; max-width: 500px; height: 320px; perspective: 1000px; cursor: pointer; }
-.flashcard-inner {
-    position: relative; width: 100%; height: 100%; text-align: center;
-    transition: transform 0.6s; transform-style: preserve-3d;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-radius: 20px;
-}
+.flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-radius: 20px; }
 .flashcard-inner.is-flipped { transform: rotateY(180deg); }
-.flashcard-face {
-    position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-    border-radius: 20px; background: white; border: 2px solid #e5e5e5;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 20px; box-sizing: border-box;
-}
+.flashcard-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; background: white; border: 2px solid #e5e5e5; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
 .flashcard-back { transform: rotateY(180deg); background-color: #fcfcfc; }
 .fc-word { font-size: 36px; font-weight: 800; color: var(--secondary-color); margin-bottom: 10px; }
 .fc-ipa { font-size: 18px; color: #888; font-style: italic; margin-bottom: 20px; }
 .fc-meaning { font-size: 26px; font-weight: bold; color: var(--primary-color); margin-bottom: 10px; }
 .fc-example { background: #eef9ff; padding: 10px; border-radius: 8px; font-size: 16px; margin-top: 10px; }
 .flashcard-controls { margin-top: 20px; display: flex; gap: 15px; }
-.btn-control {
-    background: white; border: 2px solid #ddd; padding: 10px 25px;
-    border-radius: 25px; font-weight: bold; color: #555; cursor: pointer;
-}
+.btn-control { background: white; border: 2px solid #ddd; padding: 10px 25px; border-radius: 25px; font-weight: bold; color: #555; cursor: pointer; }
 .btn-control:hover { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
-
-/* SPEAKING & AI */
 .speaking-box { text-align: center; padding: 30px; background: #fffbe6; border: 2px dashed #f1c40f; border-radius: 15px; margin-bottom: 20px; }
 .btn-mic { font-size: 35px; background: white; border: 2px solid #ddd; border-radius: 50%; width: 70px; height: 70px; cursor: pointer; color: #555; margin-top: 10px; transition: 0.2s; }
 .btn-mic:hover { background: #fcfcfc; }
 .btn-mic.listening { background: #ff4b4b; color: white; border-color: #ff4b4b; }
 
-/* ============================================================
-   4. CẤU HÌNH MOBILE (QUAN TRỌNG: Màn hình nhỏ)
-   ============================================================ */
-/* Lớp phủ mờ */
-#mobile-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 1090;
-}
+/* ==================== CẤU HÌNH RIÊNG CHO MOBILE ==================== */
+/* Nút Menu Mobile (Mặc định ẩn) */
+#mobile-menu-btn { display: none; position: fixed; top: 35px; left: 20px; z-index: 2000; background: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 20px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+/* Lớp phủ đen (Mặc định ẩn) */
+#mobile-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1090; }
 
 @media (max-width: 768px) {
-
-    .close-sidebar {
-            display: block;
-        }
-
-    /* 1. HIỆN NÚT 3 GẠCH MOBILE */
+    /* Hiện nút 3 gạch */
     #mobile-menu-btn { display: block; }
-    
-    /* 2. ẨN NÚT CỦA DESKTOP VÀ NÚT ĐĂNG NHẬP */
-    #menu-toggle-btn { display: none !important; }
-    .auth-section { display: none !important; }
 
-    /* 3. CẤU HÌNH SIDEBAR TRƯỢT TỪ TRÁI RA */
+    /* Ẩn các nút Desktop thừa */
+    #menu-toggle-btn, .auth-section { display: none !important; }
+
+    /* CẤU HÌNH SIDEBAR MOBILE (Trượt) */
     .sidebar {
-        position: fixed;
-        left: -280px; /* BAN ĐẦU ẨN SANG TRÁI (SỐ ÂM) */
-        top: 0; bottom: 0;
-        width: 260px;
+        position: fixed; /* Trôi nổi */
+        left: -280px !important; /* Mặc định ẩn sang trái */
+        top: 0; bottom: 0; width: 260px;
         z-index: 1100;
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        margin-left: 0; /* Reset margin của desktop */
-        transition: left 0.3s ease; /* Hiệu ứng trượt mượt mà */
+        margin-left: 0;
+        transition: left 0.3s ease; /* Chỉ trượt thuộc tính left */
     }
 
-    /* KHI CÓ CLASS .OPEN THÌ TRƯỢT RA */
-    .sidebar.open { left: 0; }
+    /* Class .open để hiện sidebar mobile */
+    .sidebar.open { left: 0 !important; }
 
-    /* 4. NỘI DUNG CHÍNH (Full màn hình) */
+    /* Hiện nút Đóng trên mobile */
+    .close-sidebar { display: block; }
+
+    /* Nội dung chính tràn màn hình */
     .main-content {
         margin-left: 0 !important;
-        /* Padding-top cao (100px) để không bị nút menu che mất chữ */
-        padding: 100px 15px 20px 15px;
-        width: 100%;
-        box-sizing: border-box;
+        padding: 100px 15px 20px 15px; /* Đẩy xuống để không bị menu che */
+        width: 100%; box-sizing: border-box;
     }
 
-    /* 5. THANH CÔNG CỤ (Search) */
-    .top-toolbar {
-        position: absolute;
-        top: 35px;
-        right: 75px;
-        left: 70px;
-        justify-content: flex-end;
-    }
-
+    /* Thanh công cụ */
+    .top-toolbar { position: absolute; top: 35px; right: 75px; left: 70px; justify-content: flex-end; }
     .search-box { width: 100%; max-width: 200px; }
     .search-box input { width: 100%; }
-    
-    /* Chỉnh chữ tiêu đề nhỏ lại cho vừa điện thoại */
     h1 { font-size: 20px; }
-    
-    /* Tabs cuộn ngang */
     .tabs-wrapper { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; justify-content: flex-start; }
     .tab-btn { flex: 0 0 auto; white-space: nowrap; }
 }
