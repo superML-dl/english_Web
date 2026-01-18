@@ -1,0 +1,652 @@
+/* ============================================================
+   1. CẤU HÌNH CƠ BẢN & MÀU SẮC
+   ============================================================ */
+:root {
+    --primary-color: #58cc02;  /* Xanh lá Duolingo */
+    --primary-hover: #46a302;
+    --secondary-color: #2b70c9; /* Xanh dương */
+    --bg-color: #f7f7f7;        /* Màu nền xám nhạt */
+    --sidebar-bg: #ffffff;
+    --text-dark: #3c3c3c;
+    --text-light: #777;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    height: 100vh;
+    overflow: hidden; /* Chỉ cuộn phần nội dung chính */
+}
+
+/* ============================================================
+   2. LAYOUT CHÍNH (SIDEBAR + MAIN)
+   ============================================================ */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    position: relative;
+}
+
+/* --- SIDEBAR TRÁI --- */
+.sidebar {
+    width: 280px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-shrink: 0;
+    transition: margin-left 0.3s;
+    z-index: 500;
+}
+
+.sidebar.hidden {
+    margin-left: -280px;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.close-sidebar {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #888;
+}
+
+#lesson-list {
+    list-style: none;
+    padding: 10px;
+    overflow-y: auto;
+    flex: 1;
+    margin: 0;
+}
+
+#lesson-list li {
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    color: #555;
+    transition: 0.2s;
+}
+
+#lesson-list li:hover {
+    background-color: #f0f0f0;
+}
+
+#lesson-list li.active-lesson {
+    background-color: #ddf4ff;
+    color: #0088cc;
+    border-left: 4px solid #0088cc;
+}
+
+/* NÚT MENU NỔI (khi ẩn sidebar) */
+#menu-toggle-btn {
+    position: fixed;
+    top: 15px;
+    left: 20px;
+    z-index: 900;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: none; /* Mặc định ẩn */
+}
+
+/* --- MAIN CONTENT (PHẢI) --- */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    position: relative;
+}
+
+.header-section {
+    padding: 30px 40px 10px 40px;
+}
+
+#lesson-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333;
+    margin: 0;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+/* ============================================================
+   3. THANH TÌM KIẾM (TỪ ĐIỂN)
+   ============================================================ */
+.dict-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 40px;
+    z-index: 1000;
+    width: 280px;
+}
+
+.search-box {
+    display: flex;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 5px 15px;
+    border: 1px solid #ddd;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+}
+
+.search-box button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--secondary-color);
+    cursor: pointer;
+}
+
+.dict-results {
+    background: white;
+    margin-top: 8px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+    border: 1px solid #eee;
+}
+
+.dict-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dict-word {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--secondary-color);
+}
+
+/* ============================================================
+   4. TABS CHUYỂN ĐỔI (STICKY - DÍNH Ở TRÊN)
+   ============================================================ */
+.tabs-container {
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-color); /* Trùng màu nền để che nội dung trôi qua */
+    z-index: 400;
+    padding: 10px 40px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.tabs-wrapper {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* Cho phép cuộn ngang nếu màn hình nhỏ */
+    padding-bottom: 5px;
+}
+
+.tab-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #666;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+    font-family: 'Nunito', sans-serif;
+}
+
+.tab-btn:hover {
+    background: #eee;
+}
+
+.tab-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 3px 8px rgba(88, 204, 2, 0.3);
+}
+
+/* ============================================================
+   5. KHU VỰC NỘI DUNG (VOCAB, GRAMMAR, QUIZ)
+   ============================================================ */
+.content-area {
+    padding: 0 40px 60px 40px;
+}
+
+/* --- TỪ VỰNG DẠNG LƯỚI --- */
+.vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.vocab-item {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #e5e5e5;
+    box-shadow: 0 4px 0 #e5e5e5;
+    transition: transform 0.2s;
+}
+
+.vocab-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+}
+
+.vocab-word {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--secondary-color);
+}
+
+.btn-speak {
+    background: #ffc800;
+    color: #5a3a00;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #eeba00;
+}
+
+.btn-speak:active {
+    transform: translateY(3px);
+    box-shadow: none;
+}
+
+/* --- NGỮ PHÁP & BÀI TẬP --- */
+.grammar-section, .quiz-item {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    border: 2px solid #e5e5e5;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.quiz-options button {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px 15px;
+    text-align: left;
+    background: white;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    color: #555;
+}
+
+.quiz-options button:hover {
+    background: #f9f9f9;
+    border-color: #ccc;
+}
+
+/* Input nhập liệu (Text) */
+.quiz-item input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    font-size: 16px;
+    margin: 10px 0;
+    font-family: 'Nunito', sans-serif;
+}
+
+.quiz-item input[type="text"]:focus {
+    border-color: var(--secondary-color);
+    outline: none;
+}
+
+/* Feedback đúng/sai */
+.feedback.correct { color: var(--primary-color); font-weight: 800; margin-top: 10px; }
+.feedback.wrong { color: #ff4b4b; font-weight: 800; margin-top: 10px; }
+
+/* ============================================================
+   6. FLASHCARD (THẺ GHI NHỚ)
+   ============================================================ */
+.flashcard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.flashcard-scene {
+    width: 100%;
+    max-width: 500px;
+    height: 320px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border-radius: 20px;
+}
+
+.flashcard-inner.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.flashcard-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    background: white;
+    border: 2px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+    background-color: #fcfcfc;
+}
+
+.fc-word { font-size: 36px; font-weight: 800; color: var(--secondary-color); margin-bottom: 10px; }
+.fc-ipa { font-size: 18px; color: #888; font-style: italic; margin-bottom: 20px; }
+.fc-meaning { font-size: 26px; font-weight: bold; color: var(--primary-color); margin-bottom: 10px; }
+.fc-example { background: #eef9ff; padding: 10px; border-radius: 8px; font-size: 16px; margin-top: 10px; }
+
+.flashcard-controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-control {
+    background: white;
+    border: 2px solid #ddd;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+}
+
+.btn-control:hover {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+/* ============================================================
+   7. AI CHAT & LUYỆN NÓI (PHẦN BẠN BỊ LỖI LÚC NÃY)
+   ============================================================ */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 550px;
+    background: white;
+    border: 2px solid #e5e5e5;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.chat-message {
+    max-width: 80%;
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 16px;
+    line-height: 1.5;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.chat-message.user {
+    align-self: flex-end;
+    background-color: var(--secondary-color);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message.ai {
+    align-self: flex-start;
+    background-color: white;
+    border: 1px solid #ddd;
+    color: #333;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* --- CHAT INPUT AREA (ĐÃ SỬA) --- */
+.chat-input-area {
+    display: flex;
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #eee;
+    gap: 10px; /* Khoảng cách giữa các nút */
+    align-items: center;
+}
+
+/* Ô nhập liệu tự giãn hết cỡ */
+.chat-input-area input {
+    flex: 1; /* QUAN TRỌNG: Giúp ô nhập dài ra hết mức có thể */
+    padding: 12px 15px;
+    border: 2px solid #e5e5e5;
+    border-radius: 25px;
+    outline: none;
+    font-size: 16px;
+    min-width: 0; /* Tránh bị vỡ layout trên màn hình nhỏ */
+}
+
+.chat-input-area input:focus {
+    border-color: var(--secondary-color);
+}
+
+/* Bong bóng chat (Tinh chỉnh lại cho đẹp) */
+.chat-message {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 16px;
+    line-height: 1.5;
+    position: relative;
+    word-wrap: break-word; /* Xuống dòng nếu chữ quá dài */
+    margin-bottom: 10px;
+}
+
+/* Nút Micro Tròn */
+.chat-mic-btn {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    flex-shrink: 0; /* Không bị co lại */
+}
+
+.chat-mic-btn:hover {
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+}
+
+.chat-mic-btn.listening {
+    background: #ff4b4b;
+    color: white;
+    border-color: #ff4b4b;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 75, 75, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); }
+}
+
+.chat-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.chat-btn:hover {
+    background: #1a5bace6;
+}
+
+/* Phần Luyện nói (Speaking Box) */
+.speaking-box {
+    text-align: center;
+    padding: 30px;
+    background: #fffbe6;
+    border: 2px dashed #f1c40f;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+.btn-mic {
+    font-size: 35px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    color: #555;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+.btn-mic:hover {
+    background: #fcfcfc;
+}
+.btn-mic.listening {
+    background: #ff4b4b;
+    color: white;
+    border-color: #ff4b4b;
+}
+
+/* --- QUIZ STYLES (MỚI) --- */
+
+/* Nút trắc nghiệm */
+.quiz-option-btn {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px 15px;
+    text-align: left;
+    background: white;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #555;
+    transition: 0.2s;
+}
+
+.quiz-option-btn:hover {
+    background: #f9f9f9;
+    border-color: #ccc;
+}
+
+/* Khi nút được CHỌN (trước khi nộp) */
+.quiz-option-btn.selected {
+    border-color: var(--secondary-color);
+    background-color: #eef7ff;
+    color: var(--secondary-color);
+    box-shadow: 0 0 0 1px var(--secondary-color);
+}
+
+/* Input điền từ */
+.quiz-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-top: 5px;
+    box-sizing: border-box; /* Đảm bảo không bị tràn */
+}
+
+/* Hiệu ứng Đúng / Sai sau khi nộp bài */
+.correct-bg {
+    border-color: var(--primary-color) !important;
+    background-color: #f0fff4 !important; /* Xanh nhạt */
+}
+
+.wrong-bg {
+    border-color: #ff4b4b !important;
+    background-color: #fff5f5 !important; /* Đỏ nhạt */
+}
+
+.feedback-msg {
+    margin-top: 10px;
+    font-size: 14px;
+}
