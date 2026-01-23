@@ -222,90 +222,75 @@ function renderGrammar() {
 let userAnswers = {}; // Lưu đáp án tạm
 
 function renderPractice() {
-    // 1. QUAN TRỌNG: Xóa sạch nội dung cũ trước khi vẽ lại
     contentArea.innerHTML = ''; 
-    
-    // Reset lại đáp án lưu tạm
-    userAnswers = {};
+    userAnswers = {}; 
 
-    // A. Vẽ phần Luyện Nói (Speaking)
+    // A. Phần Speaking
     if (currentLesson.speaking) {
-        const speakDiv = document.createElement('div');
-        speakDiv.className = 'speaking-box';
-        speakDiv.innerHTML = `
-            <h3>🎙️ Luyện Phát Âm</h3>
-            <p>Hãy bấm micro và đọc to câu sau:</p>
-            <div class="speaking-text">"${currentLesson.speaking}"</div>
-            
-            <button class="btn-speak" onclick="speak('${currentLesson.speaking}')" style="margin-bottom:15px;">🔊 Nghe mẫu</button>
-            <br>
-            
-            <button id="mic-btn" class="btn-mic" onclick="checkPronunciation('${currentLesson.speaking}')">
-                <i class="fa-solid fa-microphone"></i>
-            </button>
-            
-            <div id="speak-result-container" style="min-height: 60px; margin-top: 15px;">
-                <p id="speak-result" class="feedback" style="font-size:16px; color:#666;">
-                    Bấm micro để nói (Máy sẽ đợi bạn ngắt quãng 2 giây)
-                </p>
-            </div>
-        `;
-        contentArea.appendChild(speakDiv);
+        // ... (Giữ nguyên code phần Speaking của bạn ở đây) ...
+        // Nếu bạn cần code Speaking chuẩn thì dùng lại code của Ngày 16
+        const speakContainer = document.createElement('div');
+        const speakingList = Array.isArray(currentLesson.speaking) ? currentLesson.speaking : [currentLesson.speaking];
+        
+        let speakHtml = `<h3>🎙️ Luyện Phát Âm</h3><p>Bấm micro và đọc to các câu sau:</p>`;
+        speakingList.forEach((text, idx) => {
+            const safeText = text.replace(/'/g, "\\'");
+            speakHtml += `
+                <div class="speaking-box" style="margin-bottom:15px;">
+                    <div class="speaking-text">"${text}"</div>
+                    <button class="btn-speak" onclick="speak('${safeText}')">🔊 Nghe</button>
+                    <button id="mic-btn-${idx}" class="btn-mic" onclick="checkPronunciation('${safeText}', ${idx})"><i class="fa-solid fa-microphone"></i></button>
+                    <div id="speak-result-${idx}" class="feedback" style="margin-top:5px; min-height:20px;"></div>
+                </div>`;
+        });
+        speakContainer.innerHTML = speakHtml;
+        contentArea.appendChild(speakContainer);
     }
 
-    // B. Vẽ phần Trắc nghiệm (Quiz)
+    // B. Phần Quiz (Trắc nghiệm + Tự luận + Câu hỏi mở)
     if (currentLesson.quiz) {
         const quizContainer = document.createElement('div');
         quizContainer.id = 'quiz-container';
-        
-        const quizTitle = document.createElement('h3');
-        quizTitle.innerText = "📝 Bài Tập Thực Hành";
-        quizTitle.style.marginTop = "30px";
-        quizContainer.appendChild(quizTitle);
+        quizContainer.innerHTML = `<h3 style="margin-top:30px;">📝 Bài Tập Thực Hành</h3>`;
 
         currentLesson.quiz.forEach((q, idx) => {
             const div = document.createElement('div');
             div.className = 'quiz-item';
-            div.id = `quiz-q-${idx}`; 
+            div.id = `quiz-q-${idx}`;
             
             let html = `<p style="font-size: 16px; margin-bottom: 10px;"><b>Câu ${idx+1}:</b> ${q.question}</p>`;
 
-            if (q.type === 'text') {
-                // Dạng điền từ
-                html += `
-                    <input type="text" class="quiz-input" 
-                           placeholder="Nhập đáp án..." 
-                           oninput="recordAnswer(${idx}, this.value)">
-                    <div class="feedback-msg"></div>
-                `;
-            } else {
-                // Dạng trắc nghiệm
+            if (q.type === 'choice') {
                 let optionsHtml = '';
                 q.options.forEach((opt, optIdx) => {
-                    optionsHtml += `
-                        <button class="quiz-option-btn" 
-                                id="q${idx}-opt${optIdx}"
-                                onclick="selectOption(${idx}, ${optIdx})">
-                            ${opt}
-                        </button>`;
+                    optionsHtml += `<button class="quiz-option-btn" id="q${idx}-opt${optIdx}" onclick="selectOption(${idx}, ${optIdx})">${opt}</button>`;
                 });
-                html += `<div class="quiz-options">${optionsHtml}</div><div class="feedback-msg"></div>`;
+                html += `<div class="quiz-options">${optionsHtml}</div>`;
+            } 
+            else if (q.type === 'text') {
+                html += `<input type="text" class="quiz-input" placeholder="Nhập đáp án chính xác..." oninput="recordAnswer(${idx}, this.value)">`;
             }
+            // --- TÍNH NĂNG MỚI: CÂU HỎI MỞ (OPEN) ---
+            else if (q.type === 'open') {
+                html += `
+                    <textarea class="quiz-input" rows="3" placeholder="Viết ý tưởng của bạn vào đây..." oninput="recordAnswer(${idx}, this.value)" style="width:100%; padding:10px; border-radius:10px; border:2px solid #eee; font-family:inherit;"></textarea>
+                    <div class="feedback-msg" style="margin-top:10px; color:#555; font-style:italic; display:none;"></div>
+                `;
+            }
+            // ----------------------------------------
+
+            html += `<div class="feedback-msg"></div>`;
             div.innerHTML = html;
             quizContainer.appendChild(div);
         });
 
-        // Khu vực hiển thị kết quả
+        // Nút nộp bài
         const resultDiv = document.createElement('div');
-        resultDiv.id = 'quiz-result-area';
-        resultDiv.style.marginTop = '20px';
-        resultDiv.style.textAlign = 'center';
         resultDiv.innerHTML = `
-            <button id="submit-quiz-btn" class="chat-btn" onclick="submitQuiz()" style="padding: 12px 30px; font-size: 16px;">Nộp bài</button>
-            <div id="final-score" style="display:none; margin-top: 15px;"></div>
-            <button id="retry-quiz-btn" class="chat-btn" onclick="renderPractice()" style="display:none; background: #555; margin-top: 10px;">Làm lại bài</button>
+            <button id="submit-quiz-btn" class="chat-btn" onclick="submitQuiz()" style="margin-top:20px;">Nộp bài</button>
+            <div id="final-score" style="display:none; margin-top: 15px; font-weight:bold; font-size:18px;"></div>
+            <button id="retry-quiz-btn" class="chat-btn" onclick="renderPractice()" style="display:none; background:#555; margin-top:10px;">Làm lại</button>
         `;
-        
         quizContainer.appendChild(resultDiv);
         contentArea.appendChild(quizContainer);
     }
@@ -326,19 +311,35 @@ function recordAnswer(qIdx, value) {
 // Chấm điểm
 function submitQuiz() {
     let correctCount = 0;
-    const totalQuestions = currentLesson.quiz.length;
+    // Chỉ tính điểm các câu trắc nghiệm (choice) và điền từ chính xác (text)
+    // Các câu hỏi mở (open) sẽ không tính vào tổng điểm để tránh gây nản lòng
+    const scorableQuestions = currentLesson.quiz.filter(q => q.type !== 'open'); 
+    const totalScore = scorableQuestions.length;
 
     currentLesson.quiz.forEach((q, idx) => {
         const userAns = userAnswers[idx];
         const itemDiv = document.getElementById(`quiz-q-${idx}`);
-        const feedbackDiv = itemDiv.querySelector('.feedback-msg');
+        const feedbackDiv = itemDiv.querySelector('.feedback-msg'); // Chọn div feedback cuối cùng
         
         itemDiv.classList.remove('correct-bg', 'wrong-bg');
         let isCorrect = false;
 
+        // XỬ LÝ CÂU HỎI MỞ (MỚI)
+        if (q.type === 'open') {
+            // Luôn hiện màu xanh (khích lệ) và hiện gợi ý
+            itemDiv.classList.add('correct-bg');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.innerHTML = `
+                <span style="color:#2b70c9;">💡 <b>Gợi ý mẫu (Band 8+):</b></span><br>
+                "${q.answer}"
+            `;
+            return; // Bỏ qua phần tính điểm bên dưới
+        }
+
+        // Xử lý các loại cũ
         if (q.type === 'text') {
-            if (userAns && userAns.toLowerCase() === q.answer.toLowerCase()) isCorrect = true;
-        } else {
+            if (userAns && normalizeText(userAns) === normalizeText(q.answer)) isCorrect = true;
+        } else if (q.type === 'choice') {
             if (userAns === q.answer) isCorrect = true;
         }
 
@@ -348,20 +349,18 @@ function submitQuiz() {
             feedbackDiv.innerHTML = `<span style="color:var(--primary-color); font-weight:bold;">✅ Chính xác!</span>`;
         } else {
             itemDiv.classList.add('wrong-bg');
-            let rightAnswerText = q.type === 'text' ? q.answer : q.options[q.answer];
-            feedbackDiv.innerHTML = `<span style="color:#ff4b4b; font-weight:bold;">❌ Sai rồi. Đáp án đúng: "${rightAnswerText}"</span>`;
+            let rightAnswerText = q.type === 'choice' ? q.options[q.answer] : q.answer;
+            feedbackDiv.innerHTML = `<span style="color:#ff4b4b;">❌ Đáp án đúng: <b>${rightAnswerText}</b></span>`;
         }
     });
 
-    const score = Math.round((correctCount / totalQuestions) * 100);
-    const submitBtn = document.getElementById('submit-quiz-btn');
-    const resultArea = document.getElementById('final-score');
-    const retryBtn = document.getElementById('retry-quiz-btn');
-
-    submitBtn.style.display = 'none';
-    retryBtn.style.display = 'inline-block';
-    resultArea.style.display = 'block';
-    resultArea.innerHTML = `<h2 style="color: var(--secondary-color);">Kết quả: ${score}/100 điểm</h2><p>Đúng ${correctCount}/${totalQuestions} câu.</p>`;
+    // Hiển thị điểm số (chỉ tính trên các câu có đáp án cố định)
+    const scoreDiv = document.getElementById('final-score');
+    scoreDiv.style.display = 'block';
+    scoreDiv.innerHTML = `Kết quả: ${correctCount}/${totalScore} câu trắc nghiệm chính xác.`;
+    
+    document.getElementById('submit-quiz-btn').style.display = 'none';
+    document.getElementById('retry-quiz-btn').style.display = 'inline-block';
 }
 
 /* ============================================================
@@ -391,9 +390,10 @@ function renderCardUI() {
         word: vocab.word,
         ipa: vocab.ipa || "",
         meaning: vocab.meaning,
-        type: vocab.type || extraInfo.type || "verb",
-        context: extraInfo.context || "Dùng trong giao tiếp hàng ngày.",
-        example: extraInfo.example || `I use "${vocab.word}" every day.`
+        type: vocab.type || "verb", 
+        // SỬA Ở ĐÂY: Lấy trực tiếp từ vocab.context và vocab.example
+        context: vocab.context || "Ngữ cảnh đang cập nhật", 
+        example: vocab.example || `Ví dụ đang cập nhật cho từ "${vocab.word}"`
     };
 
     contentArea.innerHTML = `
@@ -458,9 +458,95 @@ function normalizeText(text) {
 // Logic kiểm tra phát âm (Voice)
 let practiceRecognition;
 let practiceSilenceTimer;
+let currentMicIndex = -1;
 
-function comparePronunciation(target, input) {
-    const resultDisplay = document.getElementById('speak-result');
+window.checkPronunciation = function(targetPhrase, index) {
+    // Lấy đúng phần tử theo ID index (mic-btn-0, mic-btn-1...)
+    const resultDisplay = document.getElementById(`speak-result-${index}`);
+    const micBtn = document.getElementById(`mic-btn-${index}`);
+
+    // 1. Kiểm tra trình duyệt
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("Trình duyệt không hỗ trợ. Hãy dùng Google Chrome.");
+        return;
+    }
+
+    // Nếu đang bấm lại chính nút mic đó -> Dừng
+    if (micBtn.classList.contains('listening')) {
+        if (practiceRecognition) practiceRecognition.stop();
+        return;
+    }
+
+    // Nếu đang nghe ở một mic khác -> Dừng mic cũ trước khi bật mic mới
+    if (currentMicIndex !== -1 && currentMicIndex !== index) {
+        const oldMic = document.getElementById(`mic-btn-${currentMicIndex}`);
+        if (oldMic) oldMic.classList.remove('listening');
+        if (practiceRecognition) practiceRecognition.stop();
+        clearTimeout(practiceSilenceTimer);
+    }
+
+    currentMicIndex = index; // Cập nhật index hiện tại
+
+    // 2. Cấu hình Mic
+    practiceRecognition = new SpeechRecognition();
+    practiceRecognition.lang = 'en-US'; 
+    practiceRecognition.interimResults = true; 
+    
+    const isMobile = window.innerWidth <= 768;
+    practiceRecognition.continuous = !isMobile; 
+
+    let finalTranscript = '';
+    let hasChecked = false;
+
+    practiceRecognition.start();
+    micBtn.classList.add('listening');
+    
+    resultDisplay.innerHTML = `<span style="color:#2b70c9; font-weight:bold;">👂 Đang nghe...</span>`;
+    resultDisplay.className = "feedback";
+
+    // 3. Xử lý kết quả
+    practiceRecognition.onresult = function(event) {
+        clearTimeout(practiceSilenceTimer);
+        finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            finalTranscript += event.results[i][0].transcript;
+        }
+
+        resultDisplay.innerHTML = `🗣️ Bạn nói: "<b style="color:#333;">${finalTranscript}</b>"`;
+
+        practiceSilenceTimer = setTimeout(() => {
+            practiceRecognition.stop(); 
+        }, 2000); 
+    };
+
+    // 4. Xử lý lỗi
+    practiceRecognition.onerror = function(event) {
+        if (event.error === 'no-speech') return;
+        micBtn.classList.remove('listening');
+        resultDisplay.innerHTML = `<span style="color:red">❌ Lỗi: ${event.error}</span>`;
+    };
+
+    // 5. Kết thúc và chấm điểm
+    practiceRecognition.onend = function() {
+        micBtn.classList.remove('listening');
+        clearTimeout(practiceSilenceTimer);
+
+        if (!hasChecked && finalTranscript.trim().length > 0) {
+            hasChecked = true;
+            // Gọi hàm so sánh (cần sửa hàm comparePronunciation để nhận resultDisplay làm tham số hoặc tự tìm lại)
+            comparePronunciation(targetPhrase, finalTranscript, resultDisplay); 
+        } else if (!hasChecked) {
+             resultDisplay.innerHTML = "❌ Chưa nghe rõ.";
+        }
+    };
+};
+
+function comparePronunciation(target, input, uiElement) {
+    // Nếu không truyền uiElement (tương thích code cũ), thử tìm mặc định
+    const resultDisplay = uiElement || document.getElementById('speak-result');
+    if (!resultDisplay) return;
+
     const cleanTarget = normalizeText(target);
     const cleanInput = normalizeText(input);
 
@@ -482,99 +568,19 @@ function comparePronunciation(target, input) {
 
     if (accuracy >= threshold) {
         resultDisplay.innerHTML = `
-            <div style="background:#e6fffa; border:2px solid #27ae60; padding:15px; border-radius:10px;">
-                <div style="color:#27ae60; font-size: 20px; font-weight:bold; margin-bottom:5px;">✅ Tuyệt vời! Chính xác.</div>
-                <div>Bạn nói: "<i>${input}</i>"</div>
-            </div>
-        `;
+            <div style="background:#e6fffa; border:2px solid #27ae60; padding:10px; border-radius:10px; margin-top:5px;">
+                <div style="color:#27ae60; font-weight:bold;">✅ Chính xác!</div>
+                <div>Bạn: "<i>${input}</i>"</div>
+            </div>`;
     } else {
         resultDisplay.innerHTML = `
-            <div style="background:#fff5f5; border:2px solid #ff4b4b; padding:15px; border-radius:10px;">
-                <div style="color:#ff4b4b; font-size: 18px; font-weight:bold; margin-bottom:5px;">⚠️ Chưa chính xác lắm</div>
-                <div style="margin-bottom:5px;">Mẫu: <b>${target}</b></div>
-                <div style="margin-bottom:5px;">Bạn nói: "<i>${input}</i>"</div>
-            </div>
-        `;
+            <div style="background:#fff5f5; border:2px solid #ff4b4b; padding:10px; border-radius:10px; margin-top:5px;">
+                <div style="color:#ff4b4b; font-weight:bold;">⚠️ Chưa chuẩn</div>
+                <div>Mẫu: <b>${target}</b></div>
+                <div>Bạn: "<i>${input}</i>"</div>
+            </div>`;
     }
 }
-
-window.checkPronunciation = function(targetPhrase) {
-    const resultDisplay = document.getElementById('speak-result');
-    const micBtn = document.getElementById('mic-btn');
-
-    // 1. Kiểm tra hỗ trợ trình duyệt
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        alert("Trình duyệt này không hỗ trợ Mic. Hãy dùng Google Chrome/Edge.");
-        return;
-    }
-
-    // Nếu đang nghe mà bấm lại -> Dừng thủ công
-    if (micBtn.classList.contains('listening')) {
-        if (practiceRecognition) practiceRecognition.stop();
-        return;
-    }
-
-    // 2. Cấu hình Mic
-    practiceRecognition = new SpeechRecognition();
-    practiceRecognition.lang = 'en-US'; 
-    practiceRecognition.interimResults = true; 
-    
-    // QUAN TRỌNG: Mobile nên tắt continuous để ổn định hơn
-    const isMobile = window.innerWidth <= 768;
-    practiceRecognition.continuous = !isMobile; 
-
-    // Biến lưu tạm những gì nghe được
-    let finalTranscript = '';
-    let hasChecked = false; // Cờ để đảm bảo không chấm điểm 2 lần
-
-    practiceRecognition.start();
-    micBtn.classList.add('listening');
-    
-    resultDisplay.innerHTML = `<span style="color:#2b70c9; font-weight:bold;">👂 Đang nghe... (Nói xong hãy im lặng)</span>`;
-    resultDisplay.className = "feedback";
-
-    // 3. Xử lý khi có âm thanh
-    practiceRecognition.onresult = function(event) {
-        clearTimeout(practiceSilenceTimer); // Reset bộ đếm
-
-        // Lấy toàn bộ nội dung đã nghe
-        finalTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-            finalTranscript += event.results[i][0].transcript;
-        }
-
-        // Hiện chữ realtime
-        resultDisplay.innerHTML = `🗣️ Bạn nói: "<b style="color:#333;">${finalTranscript}</b>"`;
-
-        // Logic tự động dừng cho Desktop (Mobile thường tự dừng trước khi chạy cái này)
-        practiceSilenceTimer = setTimeout(() => {
-            practiceRecognition.stop(); 
-        }, 2000); 
-    };
-
-    // 4. Xử lý lỗi
-    practiceRecognition.onerror = function(event) {
-        if (event.error === 'no-speech') return; // Bỏ qua nếu chưa nói gì
-        console.warn("Lỗi Mic:", event.error);
-        micBtn.classList.remove('listening');
-        resultDisplay.innerHTML = `<span style="color:red">❌ Lỗi: ${event.error} (Thử lại nhé)</span>`;
-    };
-
-    // 5. QUAN TRỌNG: KHI MIC TẮT (DÙ TỰ TẮT HAY BỊ NGẮT) -> CHẤM ĐIỂM NGAY
-    practiceRecognition.onend = function() {
-        micBtn.classList.remove('listening');
-        clearTimeout(practiceSilenceTimer);
-
-        // Chỉ chấm điểm nếu chưa chấm và đã nghe được gì đó
-        if (!hasChecked && finalTranscript.trim().length > 0) {
-            hasChecked = true; // Đánh dấu đã chấm
-            comparePronunciation(targetPhrase, finalTranscript);
-        } else if (!hasChecked) {
-             resultDisplay.innerHTML = "❌ Chưa nghe rõ. Bạn hãy nói to hơn nhé.";
-        }
-    };
-};
 
 // Logic tra từ điển
 function searchDictionary() {

@@ -138,3 +138,23 @@ body {
     .tabs-wrapper { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; justify-content: flex-start; }
     .tab-btn { flex: 0 0 auto; white-space: nowrap; }
 }
+/* --- TÙY CHỈNH Ô NHẬP LIỆU CHO BÀI TẬP VIẾT --- */
+.quiz-input {
+    width: 100%;
+    padding: 15px; /* Tăng khoảng đệm để dễ bấm */
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.3s ease;
+    background-color: #fdfdfd;
+}
+
+.quiz-input:focus {
+    border-color: var(--secondary-color);
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(43, 112, 201, 0.1);
+    outline: none;
+}
